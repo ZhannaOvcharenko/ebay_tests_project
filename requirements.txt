@@ -1,3 +1,4 @@
+appium-python-client==2.8.0
 selenium==4.20.0
 selene>=2.0.0b4
 pytest==7.4.4
