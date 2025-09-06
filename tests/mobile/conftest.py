@@ -1,36 +1,48 @@
+import os
 import pytest
-import allure
 from appium import webdriver
-from config import mobile_config
+from selene import browser
+from dotenv import load_dotenv
+import config
+from utils import attach
 
 
-@pytest.fixture(scope="function")
-def driver():
-    desired_caps = {
-        "platformName": "Android",
-        "deviceName": mobile_config.bstack_device,
-        "os_version": mobile_config.bstack_os_version,
-        "app": mobile_config.bstack_app,
-        "project": mobile_config.project,
-        "build": mobile_config.build,
-        "name": mobile_config.name,
-        "bstack:options": {
-            "userName": mobile_config.bstack_user,
-            "accessKey": mobile_config.bstack_key,
-        },
-    }
-
-    driver = webdriver.Remote(
-        command_executor="http://hub.browserstack.com/wd/hub",
-        desired_capabilities=desired_caps
+def pytest_addoption(parser):
+    parser.addoption(
+        "--context",
+        default="bstack",
+        help="Specify the test context"
     )
 
-    yield driver
 
-    # Добавим вложения в allure
-    allure.attach(
-        driver.get_screenshot_as_png(),
-        name="screenshot",
-        attachment_type=allure.attachment_type.PNG
+def pytest_configure(config_):
+    context = config_.getoption("--context")
+    env_file_path = f".env.{context}"
+
+    if os.path.exists(env_file_path):
+        load_dotenv(dotenv_path=env_file_path)
+    else:
+        print(f"Warning: Configuration file '{env_file_path}' not found.")
+
+
+@pytest.fixture
+def context(request):
+    return request.config.getoption("--context")
+
+
+@pytest.fixture(scope='function', autouse=True)
+def mobile_management(context):
+    options = config.to_driver_options(context=context)
+
+    browser.config.driver = webdriver.Remote(
+        command_executor=options.get_capability('remote_url'),
+        desired_capabilities=options
     )
-    driver.quit()
+    browser.config.timeout = 10.0
+
+    yield
+
+    attach.add_screenshot(browser)
+    attach.add_xml(browser)
+
+    browser.quit()

@@ -1,46 +1,54 @@
 import allure
+from allure_commons.types import Severity
+from appium.webdriver.common.appiumby import AppiumBy
+from selene.support.conditions import have
+from selene.support.shared import browser
 
 
-@allure.feature("Search")
-@allure.story("Search for items")
-def test_search_item(driver):
-    with allure.step("Открыть поиск и ввести запрос 'iPhone'"):
-        search_box = driver.find_element_by_accessibility_id("Search")
-        search_box.click()
-        search_box.send_keys("iPhone")
-        driver.press_keycode(66)  # Enter
+@allure.epic("Mobile Tests")
+@allure.feature("eBay Mobile")
+@allure.story("Search and Login Tests")
+class TestEbayMobile:
 
-    with allure.step("Проверить, что результаты появились"):
-        results = driver.find_elements_by_id("com.ebay.mobile:id/textview_item_title")
-        assert len(results) > 0
+    @allure.tag("mobile")
+    @allure.severity(Severity.NORMAL)
+    @allure.label("owner", "automation_team")
+    def test_search_item(self):
+        with allure.step("Открыть поиск и ввести 'iPhone'"):
+            browser.element((AppiumBy.ACCESSIBILITY_ID, "Search")).click()
+            browser.element((AppiumBy.ACCESSIBILITY_ID, "Search")).send_keys("iPhone")
+            browser.driver.press_keycode(66)  # Enter
 
+        with allure.step("Проверить, что появились результаты"):
+            results = browser.elements((AppiumBy.ID, "com.ebay.mobile:id/textview_item_title"))
+            assert len(results) > 0
 
-@allure.feature("Login")
-@allure.story("Successful login")
-def test_login_success(driver):
-    with allure.step("Открыть экран входа"):
-        driver.find_element_by_accessibility_id("Sign in").click()
+    @allure.tag("mobile")
+    @allure.severity(Severity.CRITICAL)
+    @allure.label("owner", "automation_team")
+    def test_login_success(self):
+        with allure.step("Открыть экран входа"):
+            browser.element((AppiumBy.ACCESSIBILITY_ID, "Sign in")).click()
 
-    with allure.step("Ввести данные из .env.bstack"):
-        driver.find_element_by_id("com.ebay.mobile:id/edit_text_username").send_keys("test_user")
-        driver.find_element_by_id("com.ebay.mobile:id/edit_text_password").send_keys("correct_password")
-        driver.find_element_by_id("com.ebay.mobile:id/button_sign_in").click()
+        with allure.step("Ввести корректные данные"):
+            browser.element((AppiumBy.ID, "com.ebay.mobile:id/edit_text_username")).send_keys("test_user")
+            browser.element((AppiumBy.ID, "com.ebay.mobile:id/edit_text_password")).send_keys("correct_password")
+            browser.element((AppiumBy.ID, "com.ebay.mobile:id/button_sign_in")).click()
 
-    with allure.step("Проверить успешный вход"):
-        assert driver.find_element_by_accessibility_id("My eBay").is_displayed()
+        with allure.step("Проверить успешный вход"):
+            browser.element((AppiumBy.ACCESSIBILITY_ID, "My eBay")).should(have.text("My eBay"))
 
+    @allure.tag("mobile")
+    @allure.severity(Severity.CRITICAL)
+    @allure.label("owner", "automation_team")
+    def test_login_invalid_password(self):
+        with allure.step("Открыть экран входа"):
+            browser.element((AppiumBy.ACCESSIBILITY_ID, "Sign in")).click()
 
-@allure.feature("Login")
-@allure.story("Invalid password")
-def test_login_invalid_password(driver):
-    with allure.step("Открыть экран входа"):
-        driver.find_element_by_accessibility_id("Sign in").click()
+        with allure.step("Ввести неверный пароль"):
+            browser.element((AppiumBy.ID, "com.ebay.mobile:id/edit_text_username")).send_keys("test_user")
+            browser.element((AppiumBy.ID, "com.ebay.mobile:id/edit_text_password")).send_keys("wrong_password")
+            browser.element((AppiumBy.ID, "com.ebay.mobile:id/button_sign_in")).click()
 
-    with allure.step("Ввести неверный пароль"):
-        driver.find_element_by_id("com.ebay.mobile:id/edit_text_username").send_keys("test_user")
-        driver.find_element_by_id("com.ebay.mobile:id/edit_text_password").send_keys("wrong_password")
-        driver.find_element_by_id("com.ebay.mobile:id/button_sign_in").click()
-
-    with allure.step("Проверить сообщение об ошибке"):
-        error = driver.find_element_by_id("com.ebay.mobile:id/textview_error")
-        assert error.is_displayed()
+        with allure.step("Проверить сообщение об ошибке"):
+            browser.element((AppiumBy.ID, "com.ebay.mobile:id/textview_error")).should(have.text("Incorrect password"))

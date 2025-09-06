@@ -1,18 +1,31 @@
-from pydantic import BaseSettings
+import os
+from dotenv import load_dotenv
+from appium.options.android import UiAutomator2Options
+from utils import file
+
+load_dotenv()
 
 
-class MobileConfig(BaseSettings):
-    bstack_user: str
-    bstack_key: str
-    bstack_app: str
-    bstack_device: str = "Google Pixel 6"
-    bstack_os_version: str = "12.0"
-    project: str = "eBay Mobile Tests"
-    build: str = "browserstack-build"
-    name: str = "ebay-automation"
+def to_driver_options(context: str):
+    options = UiAutomator2Options()
 
-    class Config:
-        env_file = ".env.bstack"
+    if context == 'bstack':
+        options.set_capability('remote_url', os.getenv('REMOTE_URL'))
+        options.set_capability('deviceName', os.getenv('DEVICE_NAME'))
+        options.set_capability('platformName', os.getenv('PLATFORM_NAME'))
+        options.set_capability('platformVersion', os.getenv('PLATFORM_VERSION'))
+        options.set_capability('appWaitActivity', os.getenv('APP_WAIT_ACTIVITY'))
+        options.set_capability('app', os.getenv('APP'))
+
+        options.set_capability('bstack:options', {
+            'projectName': 'eBay Mobile Tests',
+            'buildName': 'browserstack-build',
+            'sessionName': 'eBay Mobile Session',
+            'userName': os.getenv('BSTACK_USER'),
+            'accessKey': os.getenv('BSTACK_KEY'),
+        })
+
+    return options
 
 
 mobile_config = MobileConfig()
