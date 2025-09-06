@@ -18,12 +18,13 @@ BASE_API_URL = os.getenv("EBAY_API_URL", "https://api.mock-ebay.com")
 
 
 @allure.epic("API Tests")
-@allure.feature("Favorites")
-@allure.story("Проверки избранных товаров")
+@allure.feature("Избранные товары")
+@allure.story("Проверки для api избранных товаров")
 class TestFavoritesApi:
 
     @allure.tag("api")
     @allure.severity(Severity.NORMAL)
+    @allure.label("owner", "ZhannaOvcharenko")
     def test_success_add_favorite(self, auth_data):
         item_id, category = get_item_data(auth_data)
 
