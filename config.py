@@ -2,7 +2,6 @@ import os
 from dotenv import load_dotenv
 from appium.options.android import UiAutomator2Options
 from utils import file
-
 load_dotenv()
 
 
@@ -15,7 +14,9 @@ def to_driver_options(context: str):
         options.set_capability('platformName', os.getenv('PLATFORM_NAME'))
         options.set_capability('platformVersion', os.getenv('PLATFORM_VERSION'))
         options.set_capability('appWaitActivity', os.getenv('APP_WAIT_ACTIVITY'))
-        options.set_capability('app', os.getenv('APP'))
+
+        app_path = file.abs_path_from_project(os.getenv('APP'))
+        options.set_capability('app', app_path)
 
         options.set_capability('bstack:options', {
             'projectName': 'eBay Mobile Tests',
@@ -26,6 +27,3 @@ def to_driver_options(context: str):
         })
 
     return options
-
-
-mobile_config = MobileConfig()
