@@ -4,7 +4,7 @@ from appium import webdriver
 from selene import browser
 from dotenv import load_dotenv
 import config
-from utils.attach import add_screenshot, add_logs, add_html, add_video
+from utils import attach
 
 
 def pytest_addoption(parser):
@@ -34,7 +34,6 @@ def mobile_management(context):
     options = config.to_driver_options(context=context)
     remote_url = options.pop_capability('remote_url')
 
-    # Создание сессии
     browser.config.driver = webdriver.Remote(
         command_executor=remote_url,
         options=options
@@ -43,11 +42,9 @@ def mobile_management(context):
 
     yield
 
-    # Добавление вложений для Allure
-    add_screenshot(browser)
-    add_logs(browser)
-    add_html(browser)
-    add_video(browser)
+    attach.add_screenshot(browser)
+    attach.add_logs(browser)
+    attach.add_html(browser)
+    attach.add_video(browser)
 
-    # Закрытие сессии браузера
     browser.close()
