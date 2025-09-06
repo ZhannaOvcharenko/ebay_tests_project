@@ -32,7 +32,7 @@ def context(request):
 @pytest.fixture(scope='function', autouse=True)
 def mobile_management(context):
     options = config.to_driver_options(context=context)
-    remote_url = options.pop_capability('remote_url')
+    remote_url = options.get_capability('remote_url')
 
     browser.config.driver = webdriver.Remote(
         command_executor=remote_url,
