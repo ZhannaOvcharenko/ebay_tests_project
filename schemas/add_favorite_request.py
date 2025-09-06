@@ -1,11 +1,8 @@
 add_favorite_request = {
-    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$schema": "http://json-schema.org/draft-07/schema#",
     "type": "object",
     "properties": {
-        "entityId": {"type": ["integer", "null"]},
-        "dealType": {"type": "string"},
-        "entityType": {"type": "string"},
-        "addToFolder": {"type": "boolean"}
+        "itemId": {"type": "string"}
     },
-    "required": ["entityId", "dealType", "entityType", "addToFolder"]
+    "required": ["itemId"]
 }

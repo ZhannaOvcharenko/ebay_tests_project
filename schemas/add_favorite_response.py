@@ -1,9 +1,9 @@
 add_favorite_response = {
-    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$schema": "http://json-schema.org/draft-07/schema#",
     "type": "object",
     "properties": {
-        "isAdded": {"type": "boolean"},
-        "favoriteId": {"type": "integer"}
+        "watchlistItemId": {"type": "string"},
+        "ack": {"type": "string"}
     },
-    "required": ["isAdded"]
+    "required": ["ack"]
 }

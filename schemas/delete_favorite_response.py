@@ -1,12 +1,8 @@
 delete_favorite_response = {
-    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$schema": "http://json-schema.org/draft-07/schema#",
     "type": "object",
     "properties": {
-        "isDeleted": {"type": "boolean"},
-        "deletedIds": {
-            "type": "array",
-            "items": {"type": "integer"}
-        }
+        "ack": {"type": "string"}
     },
-    "required": ["isDeleted"]
+    "required": ["ack"]
 }

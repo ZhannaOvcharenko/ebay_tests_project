@@ -1,6 +1,7 @@
 import logging
+import os
 import pytest
-from api.authentication_api import get_auth_cookie
+from api.authentication_api import get_auth_token
 
 
 def pytest_configure():
@@ -12,7 +13,17 @@ def pytest_configure():
 
 
 @pytest.fixture(scope="session")
+def base_url():
+    """
+    Базовый URL eBay API (sandbox или production)
+    """
+    return os.getenv("EBAY_API_URL", "https://api.sandbox.ebay.com")
+
+
+@pytest.fixture(scope="session")
 def auth_data():
-    session, cookie = get_auth_cookie()
-    session.cookies.set("ebay-session", cookie)
+    """
+    Возвращает requests.Session с заголовком Authorization
+    """
+    session = get_auth_token()
     return session

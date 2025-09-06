@@ -1,50 +1,44 @@
 import os
 import random
-from allure_commons._allure import step
+from allure import step
 from dotenv import load_dotenv
 
 load_dotenv()
-BASE_API_URL = os.getenv("EBAY_API_URL", "https://api.mock-ebay.com")
+BASE_API_URL = os.getenv("EBAY_API_URL", "https://api.sandbox.ebay.com")
 
 
-def get_item_data(session, offer_index=0):
+def get_item_data(session, offer_index=0, query="laptop"):
     """
-    Эмуляция поиска товаров на eBay
+    Поиск товаров на eBay через Browse API
     """
-
     with step("Выполнить запрос на поиск товаров"):
-        url = f"{BASE_API_URL}/search"
-        payload = {"query": "laptop", "page": 1}
-        r = session.get(url, params=payload)
+        url = f"{BASE_API_URL}/buy/browse/v1/item_summary/search"
+        params = {"q": query, "limit": 5}
+        r = session.get(url, params=params)
         r.raise_for_status()
         data = r.json()
 
-        items = data.get("items", [])
+        items = data.get("itemSummaries", [])
         if not items or not isinstance(items, list):
-            raise RuntimeError("В ответе нет списка items")
+            raise RuntimeError("В ответе нет списка itemSummaries")
 
     with step("Получить данные по выбранному товару"):
         item = items[offer_index]
-        item_id = item.get("itemId", random.randint(1000, 9999))
-        category = item.get("category", "electronics")
+        item_id = item.get("itemId", str(random.randint(100000, 999999)))
+        category = item.get("categoryPath", "electronics")
 
     return item_id, category
 
 
-def add_item_to_favorite(session, offer_index=0):
+def add_item_to_favorite(session, offer_index=0, query="laptop"):
     """
-    Эмуляция добавления товара в избранное
+    Добавление товара в избранное (Watchlist API)
     """
-    item_id, category = get_item_data(session, offer_index)
+    item_id, category = get_item_data(session, offer_index, query)
 
     with step("Выполнить запрос на добавление товара в избранное"):
-        url = f"{BASE_API_URL}/favorites/add"
-        payload = {
-            "entityId": item_id,
-            "dealType": "buy",
-            "entityType": category,
-            "addToFolder": True
-        }
+        url = f"{BASE_API_URL}/buy/watchlist/v1/item"
+        payload = {"itemId": item_id}
         r = session.post(url, json=payload)
         r.raise_for_status()
 
