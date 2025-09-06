@@ -1,5 +1,30 @@
-# Byte-compiled / optimized / DLL files
+.env.bstack
+# Python cache
 __pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual env
+.venv/
+env/
+venv/
+
+# IDE
+.idea/
+.vscode/
+
+# pytest cache
+.pytest_cache/
+.cache/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+# Byte-compiled / optimized / DLL files
 *.py[codz]
 *$py.class
 
@@ -48,7 +73,6 @@ coverage.xml
 *.cover
 *.py.cover
 .hypothesis/
-.pytest_cache/
 cover/
 
 # Translations
@@ -135,11 +159,8 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-.env
 .envrc
 .venv
-env/
-venv/
 ENV/
 env.bak/
 venv.bak/
