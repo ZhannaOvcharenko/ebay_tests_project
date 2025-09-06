@@ -15,8 +15,8 @@ def pytest_addoption(parser):
     )
 
 
-def pytest_configure(config_):
-    context = config_.getoption("--context")
+def pytest_configure(config):
+    context = config.getoption("--context")
     env_file_path = f".env.{context}"
     if os.path.exists(env_file_path):
         load_dotenv(dotenv_path=env_file_path)
