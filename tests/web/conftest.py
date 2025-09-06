@@ -3,7 +3,7 @@ import os
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selene.support.shared import browser
-from utils import attach
+from utils.attach import add_screenshot, add_logs, add_html, add_video
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -44,9 +44,9 @@ def setup_browser():
 
     yield
 
-    attach.add_screenshot(browser)
-    attach.add_logs(browser)
-    attach.add_html(browser)
-    attach.add_video(browser)
+    add_screenshot(browser)
+    add_logs(browser)
+    add_html(browser)
+    add_video(browser)
 
     browser.quit()

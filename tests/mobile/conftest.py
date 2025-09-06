@@ -4,7 +4,7 @@ from appium import webdriver
 from selene import browser
 from dotenv import load_dotenv
 import config
-from utils import attach
+from utils.attach import add_screenshot, add_logs, add_html, add_video
 
 
 def pytest_addoption(parser):
@@ -44,10 +44,10 @@ def mobile_management(context):
     yield
 
     # Добавление вложений для Allure
-    attach.add_screenshot(browser)
-    attach.add_logs(browser)
-    attach.add_html(browser)
-    attach.add_video(browser)
+    add_screenshot(browser)
+    add_logs(browser)
+    add_html(browser)
+    add_video(browser)
 
     # Закрытие сессии браузера
     browser.close()
