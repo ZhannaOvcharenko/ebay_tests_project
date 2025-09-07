@@ -12,18 +12,18 @@ BASE_API_URL = os.getenv("EBAY_API_URL", "https://api.sandbox.ebay.com")
 
 
 def get_auth_token():
-    """
-    Получение OAuth2 токена для eBay API (Client Credentials Flow).
-    """
     url = f"{BASE_API_URL}/identity/v1/oauth2/token"
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
     data = {
         "grant_type": "client_credentials",
-        "redirect_uri": REDIRECT_URI,
         "scope": SCOPE
     }
-    response = requests.post(url, headers=headers, data=data,
-                             auth=(CLIENT_ID, CLIENT_SECRET))
+    response = requests.post(
+        url,
+        headers=headers,
+        data=data,
+        auth=(CLIENT_ID, CLIENT_SECRET)
+    )
     response.raise_for_status()
     token = response.json()["access_token"]
 
