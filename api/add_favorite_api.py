@@ -1,26 +1,22 @@
-import os
 import random
 from allure import step
-from dotenv import load_dotenv
 
-load_dotenv()
-BASE_API_URL = os.getenv("EBAY_API_URL", "https://api.sandbox.ebay.com")
+BASE_API_URL = "https://api.ebay.com"
 
 
 def get_item_data(session, offer_index=0, query="laptop"):
-    """Поиск товаров на eBay через Browse API"""
+    """GET - поиск товаров через Browse API"""
     with step("Выполнить запрос на поиск товаров"):
         url = f"{BASE_API_URL}/buy/browse/v1/item_summary/search"
         params = {"q": query, "limit": 5}
         r = session.get(url, params=params)
         r.raise_for_status()
         data = r.json()
-
         items = data.get("itemSummaries", [])
-        if not items or not isinstance(items, list):
-            raise RuntimeError("В ответе нет списка itemSummaries")
+        if not items:
+            raise RuntimeError("В ответе нет itemSummaries")
 
-    with step("Получить данные по выбранному товару"):
+    with step("Выбираем товар"):
         item = items[offer_index]
         item_id = item.get("itemId", str(random.randint(100000, 999999)))
         category = item.get("categoryPath", "electronics")
@@ -29,10 +25,10 @@ def get_item_data(session, offer_index=0, query="laptop"):
 
 
 def add_item_to_favorite(session, offer_index=0, query="laptop"):
-    """Добавление товара в избранное (Watchlist API)"""
+    """POST - добавление товара в избранное (Watchlist API)"""
     item_id, category = get_item_data(session, offer_index, query)
 
-    with step("Выполнить запрос на добавление товара в избранное"):
+    with step("Добавление товара в избранное"):
         url = f"{BASE_API_URL}/buy/watchlist/v1/item"
         payload = {"itemId": item_id}
         r = session.post(url, json=payload)

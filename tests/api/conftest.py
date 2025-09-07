@@ -1,7 +1,7 @@
 import os
 import logging
 import pytest
-from api.authentication_api import get_auth_token, generate_auth_url
+from api.authentication_api import get_auth_token
 
 
 def pytest_configure():
@@ -14,18 +14,11 @@ def pytest_configure():
 
 @pytest.fixture(scope="session")
 def base_url():
-    return os.getenv("EBAY_API_URL", "https://api.sandbox.ebay.com")
+    return os.getenv("EBAY_API_URL", "https://api.ebay.com")
 
 
 @pytest.fixture(scope="session")
 def auth_data():
-    SCOPE = os.getenv("EBAY_SCOPE", "https://api.ebay.com/oauth/api_scope")
-
-    if "buy.shopping.cart" in SCOPE or "buy.watchlist" in SCOPE:
-        logging.info("Scope требует Authorization Code Flow.")
-        session = get_auth_token(auth_type="auth_code", auth_code=os.getenv("EBAY_AUTH_CODE"))
-    else:
-        logging.info("Используем client_credentials flow.")
-        session = get_auth_token(auth_type="client_credentials")
-
+    logging.info("Используем client_credentials flow.")
+    session = get_auth_token()
     return session
