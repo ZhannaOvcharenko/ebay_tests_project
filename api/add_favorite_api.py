@@ -8,9 +8,7 @@ BASE_API_URL = os.getenv("EBAY_API_URL", "https://api.sandbox.ebay.com")
 
 
 def get_item_data(session, offer_index=0, query="laptop"):
-    """
-    Поиск товаров на eBay через Browse API
-    """
+    """Поиск товаров на eBay через Browse API"""
     with step("Выполнить запрос на поиск товаров"):
         url = f"{BASE_API_URL}/buy/browse/v1/item_summary/search"
         params = {"q": query, "limit": 5}
@@ -31,9 +29,7 @@ def get_item_data(session, offer_index=0, query="laptop"):
 
 
 def add_item_to_favorite(session, offer_index=0, query="laptop"):
-    """
-    Добавление товара в избранное (Watchlist API)
-    """
+    """Добавление товара в избранное (Watchlist API)"""
     item_id, category = get_item_data(session, offer_index, query)
 
     with step("Выполнить запрос на добавление товара в избранное"):
