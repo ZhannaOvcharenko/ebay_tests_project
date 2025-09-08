@@ -4,9 +4,9 @@ from api.authentication_api import BASE_API_URL
 
 # Для тестов используем заранее известные itemId (Production)
 PROD_TEST_ITEMS = [
-    "v1|1234567890|0",
-    "v1|0987654321|0",
-    "v1|1122334455|0",
+    "v1|294664570670|0",  # Sony PlayStation 5 Digital Edition
+    "v1|123456789012|0",  # Sony PlayStation 5 Disc Edition
+    "v1|987654321098|0",  # Sony PlayStation 5 Slim Edition
 ]
 
 
