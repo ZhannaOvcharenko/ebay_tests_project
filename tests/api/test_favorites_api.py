@@ -5,7 +5,7 @@ import allure
 from jsonschema import validate
 from allure_commons.types import AttachmentType, Severity
 
-from api.add_favorite_api import get_item_data, add_item_to_favorite
+from api.add_favorite_api import get_real_item_id, add_item_to_favorite
 from schemas.add_favorite_request import add_favorite_request
 from schemas.add_favorite_response import add_favorite_response
 from schemas.delete_favorite_response import delete_favorite_response
@@ -14,12 +14,12 @@ ENDPOINT_SEARCH = "/buy/browse/v1/item_summary/search"
 ENDPOINT_WATCHLIST = "/buy/watchlist/v1/item"
 
 
-def safe_json(r):
-    """Возвращает JSON ответа или словарь с ошибкой, если тело пустое"""
+def safe_json(response):
+    """Возвращает JSON или пустой объект, если тело ответа пустое или некорректное"""
     try:
-        return r.json()
-    except ValueError:
-        return {"error": r.text or f"Empty response, status {r.status_code}"}
+        return response.json()
+    except json.JSONDecodeError:
+        return {}
 
 
 @allure.epic("API Tests")
@@ -45,7 +45,7 @@ class TestEbayApi:
     @allure.severity(Severity.NORMAL)
     def test_post_add_favorite(self, auth_data, base_url):
         """POST - добавление товара в избранное"""
-        item_id, _ = get_item_data(auth_data)  # sandbox itemId
+        item_id = get_real_item_id(auth_data)
         payload = {"itemId": item_id}
 
         r = auth_data.post(f"{base_url}{ENDPOINT_WATCHLIST}", json=payload)
@@ -76,7 +76,8 @@ class TestEbayApi:
     @allure.severity(Severity.NORMAL)
     def test_delete_favorite(self, auth_data, base_url, offer_index):
         """DELETE - удаление товара из избранного"""
-        item_id, _ = add_item_to_favorite(auth_data, offer_index)
+        # Добавляем товар в избранное и получаем реальный itemId
+        item_id = add_item_to_favorite(auth_data, offer_index)
         url = f"{base_url}{ENDPOINT_WATCHLIST}/{item_id}"
         r = auth_data.delete(url)
         response_json = safe_json(r)

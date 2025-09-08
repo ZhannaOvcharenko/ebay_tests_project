@@ -1,36 +1,26 @@
+import logging
 from allure import step
-
-BASE_API_URL = "https://api.sandbox.ebay.com"
-
-# Тестовые itemId для sandbox Watchlist
-SANDBOX_ITEMS = [
-    "v1|100000000001|0",
-    "v1|100000000002|0",
-    "v1|100000000003|0"
-]
+from api.authentication_api import BASE_API_URL
 
 
-def get_item_data(session=None, offer_index=0, query=None):
-    """
-    Возвращает sandbox itemId для Watchlist.
-    Параметры session и query игнорируются, сохранены для совместимости.
-    """
-    # Подавляем предупреждения об unused
-    _ = session
-    _ = query
-
-    with step("Выбираем sandbox itemId"):
-        item_id = SANDBOX_ITEMS[offer_index % len(SANDBOX_ITEMS)]
-        category = "electronics"  # фиктивная категория
-    return item_id, category
+def get_real_item_id(session, query="laptop", offer_index=0):
+    """Возвращает itemId из Browse API для Watchlist"""
+    with step("Выполнить поиск товара через Browse API"):
+        url = f"{BASE_API_URL}/buy/browse/v1/item_summary/search"
+        params = {"q": query, "limit": 5}
+        r = session.get(url, params=params)
+        r.raise_for_status()
+        data = r.json()
+        items = data.get("itemSummaries", [])
+        if not items:
+            raise RuntimeError("Нет доступных товаров для Watchlist")
+        item_id = items[offer_index % len(items)]["itemId"]
+    return item_id
 
 
 def add_item_to_favorite(session, offer_index=0, query="laptop"):
-    """
-    POST - добавление товара в избранное (Watchlist API)
-    session используется для requests.Session
-    """
-    item_id, category = get_item_data(session, offer_index, query)
+    """POST - добавление товара в избранное (Watchlist API)"""
+    item_id = get_real_item_id(session, query, offer_index)
 
     with step("Добавление товара в избранное"):
         url = f"{BASE_API_URL}/buy/watchlist/v1/item"
@@ -41,4 +31,4 @@ def add_item_to_favorite(session, offer_index=0, query="laptop"):
             text = r.text or f"Empty response, status {r.status_code}"
             raise RuntimeError(f"Ошибка добавления в избранное: {r.status_code} {text}")
 
-    return item_id, category
+    return item_id
