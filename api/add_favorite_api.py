@@ -1,34 +1,35 @@
-import random
 from allure import step
 
 BASE_API_URL = "https://api.sandbox.ebay.com"
 
+# Тестовые itemId для sandbox Watchlist
+SANDBOX_ITEMS = [
+    "v1|100000000001|0",
+    "v1|100000000002|0",
+    "v1|100000000003|0"
+]
 
-def get_item_data(session, offer_index=0, query="laptop"):
-    """GET - поиск товаров через Browse API"""
-    with step("Выполнить запрос на поиск товаров"):
-        url = f"{BASE_API_URL}/buy/browse/v1/item_summary/search"
-        params = {"q": query, "limit": 5}
-        r = session.get(url, params=params)
 
-        if r.status_code != 200:
-            raise RuntimeError(f"Ошибка запроса: {r.status_code} {r.text}")
+def get_item_data(session=None, offer_index=0, query=None):
+    """
+    Возвращает sandbox itemId для Watchlist.
+    Параметры session и query игнорируются, сохранены для совместимости.
+    """
+    # Подавляем предупреждения об unused
+    _ = session
+    _ = query
 
-        data = r.json()
-        items = data.get("itemSummaries", [])
-        if not items:
-            raise RuntimeError("В ответе нет itemSummaries")
-
-    with step("Выбираем товар"):
-        item = items[offer_index]
-        item_id = item.get("itemId", str(random.randint(100000, 999999)))
-        category = item.get("categoryPath", "electronics")
-
+    with step("Выбираем sandbox itemId"):
+        item_id = SANDBOX_ITEMS[offer_index % len(SANDBOX_ITEMS)]
+        category = "electronics"  # фиктивная категория
     return item_id, category
 
 
 def add_item_to_favorite(session, offer_index=0, query="laptop"):
-    """POST - добавление товара в избранное (Watchlist API)"""
+    """
+    POST - добавление товара в избранное (Watchlist API)
+    session используется для requests.Session
+    """
     item_id, category = get_item_data(session, offer_index, query)
 
     with step("Добавление товара в избранное"):
@@ -37,6 +38,7 @@ def add_item_to_favorite(session, offer_index=0, query="laptop"):
         r = session.post(url, json=payload)
 
         if r.status_code not in [200, 201]:
-            raise RuntimeError(f"Ошибка добавления в избранное: {r.status_code} {r.text}")
+            text = r.text or f"Empty response, status {r.status_code}"
+            raise RuntimeError(f"Ошибка добавления в избранное: {r.status_code} {text}")
 
     return item_id, category

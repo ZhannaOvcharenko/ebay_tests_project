@@ -45,7 +45,7 @@ class TestEbayApi:
     @allure.severity(Severity.NORMAL)
     def test_post_add_favorite(self, auth_data, base_url):
         """POST - добавление товара в избранное"""
-        item_id, _ = get_item_data(auth_data)
+        item_id, _ = get_item_data(auth_data)  # sandbox itemId
         payload = {"itemId": item_id}
 
         r = auth_data.post(f"{base_url}{ENDPOINT_WATCHLIST}", json=payload)
@@ -97,3 +97,6 @@ class TestEbayApi:
 
         allure.attach(json.dumps({"itemId": "999999999999"}), "Request", AttachmentType.JSON)
         allure.attach(json.dumps(response_json, indent=4), "Response", AttachmentType.JSON)
+
+        logging.info(f"DELETE {url} nonexistent status={r.status_code}")
+        assert r.status_code in [400, 404]
