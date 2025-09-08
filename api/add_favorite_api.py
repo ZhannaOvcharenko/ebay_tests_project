@@ -1,7 +1,7 @@
 import random
 from allure import step
 
-BASE_API_URL = "https://api.ebay.com"
+BASE_API_URL = "https://api.sandbox.ebay.com"
 
 
 def get_item_data(session, offer_index=0, query="laptop"):
@@ -10,7 +10,10 @@ def get_item_data(session, offer_index=0, query="laptop"):
         url = f"{BASE_API_URL}/buy/browse/v1/item_summary/search"
         params = {"q": query, "limit": 5}
         r = session.get(url, params=params)
-        r.raise_for_status()
+
+        if r.status_code != 200:
+            raise RuntimeError(f"Ошибка запроса: {r.status_code} {r.text}")
+
         data = r.json()
         items = data.get("itemSummaries", [])
         if not items:
@@ -32,6 +35,8 @@ def add_item_to_favorite(session, offer_index=0, query="laptop"):
         url = f"{BASE_API_URL}/buy/watchlist/v1/item"
         payload = {"itemId": item_id}
         r = session.post(url, json=payload)
-        r.raise_for_status()
+
+        if r.status_code not in [200, 201]:
+            raise RuntimeError(f"Ошибка добавления в избранное: {r.status_code} {r.text}")
 
     return item_id, category

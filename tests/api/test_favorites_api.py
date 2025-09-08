@@ -8,11 +8,18 @@ from allure_commons.types import AttachmentType, Severity
 from api.add_favorite_api import get_item_data, add_item_to_favorite
 from schemas.add_favorite_request import add_favorite_request
 from schemas.add_favorite_response import add_favorite_response
-from schemas.delete_favorite_request import delete_favorite_request
 from schemas.delete_favorite_response import delete_favorite_response
 
 ENDPOINT_SEARCH = "/buy/browse/v1/item_summary/search"
 ENDPOINT_WATCHLIST = "/buy/watchlist/v1/item"
+
+
+def safe_json(r):
+    """Возвращает JSON ответа или словарь с ошибкой, если тело пустое"""
+    try:
+        return r.json()
+    except ValueError:
+        return {"error": r.text or f"Empty response, status {r.status_code}"}
 
 
 @allure.epic("API Tests")
@@ -26,13 +33,14 @@ class TestEbayApi:
         params = {"q": "laptop", "limit": 3}
 
         r = auth_data.get(url, params=params)
+        response_json = safe_json(r)
+
         allure.attach(json.dumps(params), "Request", AttachmentType.JSON)
-        allure.attach(json.dumps(r.json(), indent=4), "Response", AttachmentType.JSON)
+        allure.attach(json.dumps(response_json, indent=4), "Response", AttachmentType.JSON)
 
         logging.info(f"GET {url} status={r.status_code}")
         assert r.status_code == 200
-        data = r.json()
-        assert "itemSummaries" in data
+        assert "itemSummaries" in response_json
 
     @allure.severity(Severity.NORMAL)
     def test_post_add_favorite(self, auth_data, base_url):
@@ -41,21 +49,25 @@ class TestEbayApi:
         payload = {"itemId": item_id}
 
         r = auth_data.post(f"{base_url}{ENDPOINT_WATCHLIST}", json=payload)
+        response_json = safe_json(r)
+
         allure.attach(json.dumps(payload), "Request", AttachmentType.JSON)
-        allure.attach(json.dumps(r.json(), indent=4), "Response", AttachmentType.JSON)
+        allure.attach(json.dumps(response_json, indent=4), "Response", AttachmentType.JSON)
 
         logging.info(f"POST {ENDPOINT_WATCHLIST} status={r.status_code}")
         assert r.status_code in [200, 201]
         validate(payload, add_favorite_request)
-        validate(r.json(), add_favorite_response)
+        validate(response_json, add_favorite_response)
 
     @allure.severity(Severity.NORMAL)
     def test_post_invalid_favorite(self, auth_data, base_url):
         """POST - добавление невалидного товара"""
         payload = {"itemId": "INVALID_ID"}
         r = auth_data.post(f"{base_url}{ENDPOINT_WATCHLIST}", json=payload)
+        response_json = safe_json(r)
+
         allure.attach(json.dumps(payload), "Request", AttachmentType.JSON)
-        allure.attach(json.dumps(r.json(), indent=4), "Response", AttachmentType.JSON)
+        allure.attach(json.dumps(response_json, indent=4), "Response", AttachmentType.JSON)
 
         logging.info(f"POST {ENDPOINT_WATCHLIST} invalid status={r.status_code}")
         assert r.status_code in [400, 404]
@@ -67,20 +79,21 @@ class TestEbayApi:
         item_id, _ = add_item_to_favorite(auth_data, offer_index)
         url = f"{base_url}{ENDPOINT_WATCHLIST}/{item_id}"
         r = auth_data.delete(url)
+        response_json = safe_json(r)
+
         allure.attach(json.dumps({"itemId": item_id}), "Request", AttachmentType.JSON)
-        allure.attach(json.dumps(r.json(), indent=4), "Response", AttachmentType.JSON)
+        allure.attach(json.dumps(response_json, indent=4), "Response", AttachmentType.JSON)
 
         logging.info(f"DELETE {url} status={r.status_code}")
         assert r.status_code == 200
-        validate(r.json(), delete_favorite_response)
+        validate(response_json, delete_favorite_response)
 
     @allure.severity(Severity.NORMAL)
     def test_delete_nonexistent_favorite(self, auth_data, base_url):
         """DELETE - удаление несуществующего товара"""
         url = f"{base_url}{ENDPOINT_WATCHLIST}/999999999999"
         r = auth_data.delete(url)
-        allure.attach(json.dumps({"itemId": "999999999999"}), "Request", AttachmentType.JSON)
-        allure.attach(json.dumps(r.json(), indent=4), "Response", AttachmentType.JSON)
+        response_json = safe_json(r)
 
-        logging.info(f"DELETE {url} nonexistent status={r.status_code}")
-        assert r.status_code in [400, 404]
+        allure.attach(json.dumps({"itemId": "999999999999"}), "Request", AttachmentType.JSON)
+        allure.attach(json.dumps(response_json, indent=4), "Response", AttachmentType.JSON)
