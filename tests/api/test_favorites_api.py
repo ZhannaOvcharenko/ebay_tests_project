@@ -8,6 +8,7 @@ from allure_commons.types import AttachmentType, Severity
 from api.add_favorite_api import get_real_item_id, add_item_to_favorite
 from schemas.add_favorite_request import add_favorite_request
 from schemas.add_favorite_response import add_favorite_response
+from schemas.delete_favorite_request import delete_favorite_request
 from schemas.delete_favorite_response import delete_favorite_response
 
 ENDPOINT_SEARCH = "/buy/browse/v1/item_summary/search"
@@ -15,11 +16,10 @@ ENDPOINT_WATCHLIST = "/buy/watchlist/v1/item"
 
 
 def safe_json(response):
-    """Возвращает JSON или пустой объект, если тело ответа пустое или некорректное"""
     try:
         return response.json()
     except json.JSONDecodeError:
-        return {}
+        return {"empty_response": True}
 
 
 @allure.epic("API Tests")
@@ -55,9 +55,13 @@ class TestEbayApi:
         allure.attach(json.dumps(response_json, indent=4), "Response", AttachmentType.JSON)
 
         logging.info(f"POST {ENDPOINT_WATCHLIST} status={r.status_code}")
-        assert r.status_code in [200, 201]
+
+        # Валидация request и response
         validate(payload, add_favorite_request)
-        validate(response_json, add_favorite_response)
+        if r.status_code in [200, 201]:
+            validate(response_json, add_favorite_response)
+
+        assert r.status_code in [200, 201]
 
     @allure.severity(Severity.NORMAL)
     def test_post_invalid_favorite(self, auth_data, base_url):
@@ -76,8 +80,8 @@ class TestEbayApi:
     @allure.severity(Severity.NORMAL)
     def test_delete_favorite(self, auth_data, base_url, offer_index):
         """DELETE - удаление товара из избранного"""
-        # Добавляем товар в избранное и получаем реальный itemId
         item_id = add_item_to_favorite(auth_data, offer_index)
+
         url = f"{base_url}{ENDPOINT_WATCHLIST}/{item_id}"
         r = auth_data.delete(url)
         response_json = safe_json(r)
@@ -86,8 +90,11 @@ class TestEbayApi:
         allure.attach(json.dumps(response_json, indent=4), "Response", AttachmentType.JSON)
 
         logging.info(f"DELETE {url} status={r.status_code}")
+        validate({"itemId": item_id}, delete_favorite_request)
+        if r.status_code == 200:
+            validate(response_json, delete_favorite_response)
+
         assert r.status_code == 200
-        validate(response_json, delete_favorite_response)
 
     @allure.severity(Severity.NORMAL)
     def test_delete_nonexistent_favorite(self, auth_data, base_url):

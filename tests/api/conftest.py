@@ -14,11 +14,13 @@ def pytest_configure():
 
 @pytest.fixture(scope="session")
 def base_url():
+    # Берем URL из .env, по умолчанию production
     return os.getenv("EBAY_API_URL", "https://api.ebay.com")
 
 
 @pytest.fixture(scope="session")
 def auth_data():
-    logging.info("Используем client_credentials flow.")
+    logging.info("Используем client_credentials flow для eBay API.")
+    # Возвращаем сессию с токеном
     session = get_auth_token()
     return session
