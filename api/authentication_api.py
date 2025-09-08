@@ -7,7 +7,10 @@ load_dotenv()
 CLIENT_ID = os.getenv("EBAY_CLIENT_ID")
 CLIENT_SECRET = os.getenv("EBAY_CLIENT_SECRET")
 SCOPE = os.getenv("EBAY_SCOPE", "https://api.ebay.com/oauth/api_scope")
-BASE_API_URL = os.getenv("EBAY_API_URL", "https://api.ebay.com")
+
+# По умолчанию URL для SANDBOX
+BASE_API_URL = os.getenv("EBAY_API_URL", "https://api.sandbox.ebay.com")
+
 TOKEN_FILE = os.path.join(os.path.dirname(__file__), ".ebay_token")
 
 
@@ -35,6 +38,7 @@ def get_auth_token():
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
     data = {"grant_type": "client_credentials", "scope": SCOPE}
 
+    # Авторизация через Basic Auth
     response = requests.post(url, headers=headers, data=data, auth=(CLIENT_ID, CLIENT_SECRET))
     response.raise_for_status()
     result = response.json()

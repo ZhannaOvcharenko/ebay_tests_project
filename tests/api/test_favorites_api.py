@@ -6,13 +6,14 @@ from jsonschema import validate
 from allure_commons.types import AttachmentType, Severity
 
 from api.add_favorite_api import get_item_data, add_item_to_favorite
-from api.schemas.add_favorite_request import add_favorite_request
-from api.schemas.add_favorite_response import add_favorite_response
-from api.schemas.delete_favorite_request import delete_favorite_request
-from api.schemas.delete_favorite_response import delete_favorite_response
+from schemas.add_favorite_request import add_favorite_request
+from schemas.add_favorite_response import add_favorite_response
+from schemas.delete_favorite_request import delete_favorite_request
+from schemas.delete_favorite_response import delete_favorite_response
 
 ENDPOINT_SEARCH = "/buy/browse/v1/item_summary/search"
 ENDPOINT_WATCHLIST = "/buy/watchlist/v1/item"
+
 
 @allure.epic("API Tests")
 @allure.feature("Public API eBay")
