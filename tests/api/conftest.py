@@ -1,42 +1,36 @@
+import os
 import logging
 import pytest
-
-from api.authentication_api import get_auth_token
+import requests
+from api.authentication_api import get_auth_token, get_user_session_from_refresh_token, load_tokens
 
 
 @pytest.fixture(scope="session")
 def base_url():
-    """Базовый URL для API"""
-    return "https://api.ebay.com"
+    env = os.getenv("EBAY_ENV", "prod")
+    if env == "sandbox":
+        return os.getenv("EBAY_SANDBOX_API_URL")
+    return os.getenv("EBAY_API_URL")
 
 
 @pytest.fixture(scope="session")
-def prod_session():
-    """Session для PROD с доступными scope (client_credentials)"""
-    logging.info("Используем PROD session (client_credentials)")
-    return get_auth_token()
-
-
-@pytest.fixture(scope="session")
-def sandbox_session():
-    """Session для SANDBOX (можно заменить на альтернативный endpoint)"""
-    logging.info("Используем SANDBOX session (client_credentials)")
-    return get_auth_token()
-    # Если позже будет refresh_token для sandbox, можно заменить на:
-    # return get_user_session_from_refresh_token()
-
-
-@pytest.fixture
-def auth_data(request, prod_session, sandbox_session):
+def auth_data():
     """
-    Автоматический выбор session в зависимости от маркера:
-    - @pytest.mark.prod → prod_session
-    - @pytest.mark.sandbox → sandbox_session
+    Выбор авторизации:
+    - prod: client_credentials flow для доступного scope
+    - sandbox: имитация с базовым session (без реального user token)
     """
-    if "prod" in request.keywords:
-        return prod_session
-    elif "sandbox" in request.keywords:
-        return sandbox_session
-    else:
-        # По умолчанию используем prod
-        return prod_session
+    env = os.getenv("EBAY_ENV", "prod")
+    tokens = load_tokens()
+    if env == "sandbox":
+        logging.info("Sandbox environment: создаём базовую сессию без refresh token")
+        session = requests.Session()
+        session.headers.update({"Authorization": "Bearer MOCK_SANDBOX_TOKEN"})
+        return session
+
+    # Prod environment
+    if os.getenv("EBAY_REFRESH_TOKEN") or tokens.get("refresh_token"):
+        logging.info("Используем user-token (refresh_token flow) для eBay API.")
+        return get_user_session_from_refresh_token()
+    logging.info("Используем client_credentials flow для eBay API.")
+    return get_auth_token()
