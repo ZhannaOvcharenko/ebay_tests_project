@@ -1,55 +1,49 @@
 import os
 import pytest
 from appium import webdriver
-from selene.support.shared import browser
 from dotenv import load_dotenv
-import config as cfg
-from utils import attach
 
 
-def pytest_addoption(parser):
-    parser.addoption(
-        "--context",
-        default="bstack",
-        help="Specify the test context"
-    )
-
-
-@pytest.fixture
-def context(request):
-    return request.config.getoption("--context")
-
-
-@pytest.fixture(scope="function", autouse=True)
-def mobile_management(context):
-    """Фикстура для инициализации мобильного драйвера и закрытия сессии"""
-
-    # Загружаем переменные окружения для выбранного контекста
-    env_file_path = f".env.{context}"
+@pytest.fixture(scope="function")
+def driver():
+    """
+    Фикстура для инициализации мобильного драйвера и закрытия сессии.
+    Работает с BrowserStack через .env.bstack
+    """
+    # Загружаем .env для BrowserStack
+    env_file_path = ".env.bstack"
     if os.path.exists(env_file_path):
         load_dotenv(dotenv_path=env_file_path)
     else:
-        print(f"Warning: Configuration file '{env_file_path}' not found.")
+        raise FileNotFoundError(f"Файл конфигурации '{env_file_path}' не найден.")
 
-    # Опции для драйвера
-    options = cfg.to_driver_options(context=context)
-    remote_url = options.get_capability("remote_url")
+    # Получаем переменные окружения
+    remote_url = os.getenv("REMOTE_URL")
+    platform_name = os.getenv("PLATFORM_NAME")
+    device_name = os.getenv("DEVICE_NAME")
+    platform_version = os.getenv("PLATFORM_VERSION")
+    app_url = os.getenv("APP_URL")
+    automation_name = os.getenv("AUTOMATION_NAME", "UiAutomator2")  # по умолчанию Android
+
     if not remote_url:
-        raise ValueError("REMOTE_URL is not set. Check your .env file.")
+        raise ValueError("REMOTE_URL не задан в .env.bstack")
+
+    # Формируем capabilities
+    capabilities = {
+        "platformName": platform_name,
+        "deviceName": device_name,
+        "platformVersion": platform_version,
+        "automationName": automation_name,
+        "app": app_url,
+    }
 
     # Инициализация драйвера
-    browser.config.driver = webdriver.Remote(
+    driver = webdriver.Remote(
         command_executor=remote_url,
-        options=options
+        desired_capabilities=capabilities
     )
-    browser.config.timeout = 10.0
 
-    yield
+    yield driver
 
-    # Вложения для Allure
-    attach.add_screenshot(browser)
-    attach.add_logs(browser)
-    attach.add_html(browser)
-    attach.add_video(browser)
-
-    browser.close()
+    # Закрываем сессию после теста
+    driver.quit()
