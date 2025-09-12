@@ -7,11 +7,12 @@
 
 ### Особенности проекта
 
-* Оповещения о тестовых прогонах в Telegram
-* Отчеты с видео, скриншотом, логами, исходной моделью разметки страницы
+* WEB UI и API тесты
+* Запуск WEB UI автотестов удаленно в Selenoid либо локально
 * Сборка проекта в Jenkins
-* Отчеты Allure Report
-* Запуск web/UI автотестов в Selenoid
+* Отчеты о запусках тестовых прогонов (интеграция с Allure TestOps)
+* Привязка тестовых прогонов и тест-кейсов к задачам (интеграция с Jira)
+* Оповещения о тестовых прогонах в Telegram
 
 ### Список проверок, реализованных в web/UI автотестах
 
@@ -24,9 +25,10 @@
 
 ----
 
-### Используемый стэк
+### Проект реализован с использованием:
 
-<img title="Python" src="/files/icons/python-original.svg" height="40" width="40"/> <img title="Pytest" src="/files/icons/pytest-original.svg" height="40" width="40"/> <img title="Allure Report" src="/files/icons/Allure_Report.png" height="40" width="40"/> <img title="GitHub" src="/files/icons/github-original.svg" height="40" width="40"/> <img title="Selenoid" src="/files/icons/selenoid.png" height="40" width="40"/> <img title="Selenium" src="/files/icons/selenium-original.svg" height="40" width="40"/> <img title="Selene" src="/files/icons/selene.png" height="40" width="40"/> <img title="Pycharm" src="/files/icons/pycharm.png" height="40" width="40"/> <img title="Telegram" src="/files/icons/tg.png" height="40" width="40"/> <img title="Jenkins" src="/files/icons/jenkins-original.svg" height="40" width="40"/>
+<img title="Python" src="/files/icons/python-original.svg" height="40" width="40"/> <img title="Pytest" src="/files/icons/pytest-original.svg" height="40" width="40"/> <img title="Selenium" src="/files/icons/selenium-original.svg" height="40" width="40"/> <img title="Selene" src="/files/icons/selene.png" height="40" width="40"/> <img title="Requests" src="/files/icons/requests.png" height="40" width="40"/> <img title="Selenoid" src="/files/icons/selenoid.png" height="40" width="40"/> <img title="GitHub" src="/files/icons/github-original.svg" height="40" width="40"/>  <img title="Jenkins" src="/files/icons/jenkins-original.svg" height="40" width="40"/> <img title="Pycharm" src="/files/icons/pycharm.png" height="40" width="40"/> <img title="Allure Report" src="/files/icons/Allure_Report.png" height="40" width="40"/>  <img title="Allure TestOps" src="/files/icons/allure_testops.png" height="40" width="40"/> <img title="Jira" src="/files/icons/jira.png" height="40" width="40"/> <img title="Telegram" src="/files/icons/tg.png" height="40" width="40"/> 
+
 
 ----
 
