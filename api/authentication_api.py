@@ -38,7 +38,7 @@ def get_app_session(env="prod"):
 
 
 def get_user_session_from_refresh_token(env="prod"):
-    """User access token через refresh_token (для Watchlist API)."""
+    """User access token through refresh_token"""
     tokens = _load_tokens(env)
     url = "https://api.ebay.com/identity/v1/oauth2/token"
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
@@ -65,10 +65,8 @@ def get_user_session_from_refresh_token(env="prod"):
 # ============ Backward compatibility ============
 
 def get_auth_token(env="prod"):
-    """Alias для старого кода. Возвращает application session."""
     return get_app_session(env)
 
 
 def load_tokens(env="prod"):
-    """Публичная обёртка для загрузки токенов из .env"""
     return _load_tokens(env)

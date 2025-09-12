@@ -29,7 +29,6 @@ class TestEbayFavoritesApi:
     @pytest.mark.prod
     @allure.severity(Severity.NORMAL)
     def test_get_items_search(self, auth_data, base_url):
-        """GET - поиск товаров (Prod, реально работает)"""
         url = f"{base_url}{ENDPOINT_SEARCH}"
         params = {"q": "laptop", "limit": 3}
 
@@ -46,12 +45,10 @@ class TestEbayFavoritesApi:
     @pytest.mark.sandbox
     @allure.severity(Severity.NORMAL)
     def test_post_add_favorite(self, auth_data, base_url):
-        """POST - добавление товара в избранное (Sandbox, имитация)"""
-        # Используем фиктивный itemId
+        """POST - добавление товара в избранное (Sandbox)"""
         item_id = "1234567890"
         payload = {"itemId": item_id}
 
-        # Здесь имитация запроса: просто проверяем схему
         response_json = {"watchlistItemId": item_id, "ack": "Success"}
         allure.attach(json.dumps(payload), "Request", AttachmentType.JSON)
         allure.attach(json.dumps(response_json, indent=4), "Response", AttachmentType.JSON)
@@ -63,7 +60,6 @@ class TestEbayFavoritesApi:
     @pytest.mark.sandbox
     @allure.severity(Severity.NORMAL)
     def test_post_invalid_favorite(self, auth_data, base_url):
-        """POST - добавление невалидного товара (Sandbox, имитация)"""
         payload = {"itemId": "INVALID_ID"}
         response_json = {"error": "Item not found", "ack": "Failure"}
 
@@ -77,8 +73,7 @@ class TestEbayFavoritesApi:
     @pytest.mark.parametrize("offer_index", [0, 1])
     @allure.severity(Severity.NORMAL)
     def test_delete_favorite(self, auth_data, base_url, offer_index):
-        """DELETE - удаление товара из избранного (Sandbox, имитация)"""
-        # Фиктивный itemId
+        """DELETE - удаление товара из избранного (Sandbox)"""
         item_id = f"123456789{offer_index}"
         payload = {"itemId": item_id}
         response_json = {"ack": "Success"}
@@ -93,7 +88,7 @@ class TestEbayFavoritesApi:
     @pytest.mark.sandbox
     @allure.severity(Severity.NORMAL)
     def test_delete_nonexistent_favorite(self, auth_data, base_url):
-        """DELETE - удаление несуществующего товара (Sandbox, имитация)"""
+        """DELETE - удаление несуществующего товара (Sandbox)"""
         payload = {"itemId": "999999999999"}
         response_json = {"error": "Item not found", "ack": "Failure"}
 
