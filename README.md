@@ -59,7 +59,7 @@ ENVIRONMENT = ['STAGE', 'PREPROD', 'PROD'] # Окружение
 COMMENT = 'some comment' # Комментарий, в котором можно указать аккаунт в tg для уведомления об отчете
 ```
 #### Запуск автотестов в Jenkins
-1. Открыть <a target="_blank" href="https://jenkins.autotests.cloud/job/ZhannaOvcharenko_qa_guru_python_14/">проект</a>
+1. Открыть <a target="_blank" href="https://jenkins.autotests.cloud/job/ebay_tests_project_ZhannaOvcharenko/">проект</a>
 2. Нажать "Build with Parameters"
 3. Из списка "ENVIRONMENT" выбрать любое окружение
 4. В поле "COMMENT" ввести комментарий
@@ -69,18 +69,14 @@ COMMENT = 'some comment' # Комментарий, в котором можно 
 
 ----
 
-### Allure отчет
-#### <a target="_blank" href="https://jenkins.autotests.cloud/job/ZhannaOvcharenko_qa_guru_python_14/1/allure/">Общие результаты</a>
-![allure_report_overview](/files/allure_report_overview.png)
+### Отчет в Allure TestOps
+#### <a target="_blank" href="https://allure.autotests.cloud/launch/47738/?treeId=0">Результаты прогона</a>
+![allure_report_overview](/files/Allure%20TestOPS.png)
 
-#### <a target="_blank" href="https://jenkins.autotests.cloud/job/qa_guru_python_20_14_kyarygina/16/allure/#suites">Результаты прохождения теста</a>
+----
 
-![allure_reports_suites](/files/allure_report_suites.png)
-
-#### <a target="_blank" href="https://jenkins.autotests.cloud/job/qa_guru_python_20_14_kyarygina/16/allure/#suites">Приложенные к кейсу логи, видео, скриншоты</a>
-
-
-![allure_reports_attach](/files/allure_report_attach.png)
+### Интеграция с Jira
+![telegram_allert](/files/Jira.png)
 
 ----
 
