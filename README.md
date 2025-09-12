@@ -14,15 +14,6 @@
 * Привязка тестовых прогонов и тест-кейсов к задачам (интеграция с Jira)
 * Оповещения о тестовых прогонах в Telegram
 
-### Список проверок, реализованных в web/UI автотестах
-
-- [x] Проверка видимости популярных блоков на главной странице
-- [x] Проверка фильтров для Cameras
-- [x] Проверка фильтров для Laptops
-- [x] Проверка фильтров для Smartphones
-- [x] Проверка фильтров для Tablets
-- [x] Проверка диалогового для Watches
-
 ----
 
 ### Проект реализован с использованием:
@@ -34,12 +25,20 @@
 
 ### Локальный запуск автотестов
 
-#### Для запуска web/UI автотестов выполнить в cli:
+#### Для запуска Web UI автотестов выполнить в cli:
 ```bash
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-pytest .
+pytest tests/web
+```
+
+#### Для запуска API автотестов выполнить в cli:
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+pytest tests/api
 ```
 
 #### Получение отчёта:
@@ -50,7 +49,7 @@ allure serve tests/allure-results
 ----
 
 ### Проект в Jenkins
-> <a target="_blank" href="https://jenkins.autotests.cloud/job/ZhannaOvcharenko_qa_guru_python_14/">Ссылка</a>
+> <a target="_blank" href="https://jenkins.autotests.cloud/job/ebay_tests_project_ZhannaOvcharenko/">Ссылка</a>
 
 #### Параметры сборки
 > [!NOTE]
