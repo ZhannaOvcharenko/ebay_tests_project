@@ -1,32 +1,32 @@
 import os
 import pytest
 from appium import webdriver
-from selene.support.shared import browser
 from dotenv import load_dotenv
+from selene import browser
+import config
+from utils import attach
 
-load_dotenv(".env.bstack")
 
+@pytest.fixture(scope='function', autouse=True)
+def mobile_management():
+    load_dotenv(".env.bstack")  # загружаем переменные для BrowserStack
 
-@pytest.fixture(scope="function", autouse=True)
-def setup_browserstack():
-    desired_caps = {
-        "platformName": "Android",
-        "deviceName": os.getenv("DEVICE_NAME", "Google Pixel 6"),
-        "app": os.getenv("APP_URL"),
-        "appWaitActivity": os.getenv("APP_WAIT_ACTIVITY", "*"),
-        "autoGrantPermissions": True,
-    }
+    options = config.to_driver_options(context='bstack')
 
-    driver = webdriver.Remote(
-        command_executor=(
-            f"https://{os.getenv('BSTACK_USER')}:"
-            f"{os.getenv('BSTACK_KEY')}@hub.browserstack.com/wd/hub"
-        ),
-        desired_capabilities=desired_caps
+    browser.config.driver = webdriver.Remote(
+        command_executor=os.getenv('REMOTE_URL'),
+        options=options
     )
+    browser.config.timeout = 10.0
 
-    browser.config.driver = driver
+    # Сохраняем креды в browser.config для использования в тестах
+    browser.config.TEST_EBAY_USERNAME = os.getenv('TEST_EBAY_USERNAME')
+    browser.config.TEST_EBAY_PASSWORD = os.getenv('TEST_EBAY_PASSWORD')
+    browser.config.TEST_EBAY_WRONG_PASSWORD = os.getenv('TEST_EBAY_WRONG_PASSWORD')
 
-    yield browser
+    yield
 
-    driver.quit()
+    attach.add_screenshot(browser)
+    attach.add_logs(browser)
+    attach.add_html(browser)
+    browser.quit()
