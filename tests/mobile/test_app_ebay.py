@@ -12,7 +12,7 @@ class TestEbayMobile:
 
     @allure.tag("mobile")
     @allure.severity(Severity.NORMAL)
-    @allure.label("owner", "automation_team")
+    @allure.label("owner", "ZhannaOvcharenko")
     def test_search_item(self):
         with allure.step("Открыть поиск и ввести 'iPhone'"):
             browser.element((AppiumBy.ACCESSIBILITY_ID, "Search")).click()
@@ -25,7 +25,7 @@ class TestEbayMobile:
 
     @allure.tag("mobile")
     @allure.severity(Severity.CRITICAL)
-    @allure.label("owner", "automation_team")
+    @allure.label("owner", "ZhannaOvcharenko")
     def test_login_success(self):
         with allure.step("Открыть экран входа"):
             browser.element((AppiumBy.ACCESSIBILITY_ID, "Sign in")).click()
@@ -40,7 +40,7 @@ class TestEbayMobile:
 
     @allure.tag("mobile")
     @allure.severity(Severity.CRITICAL)
-    @allure.label("owner", "automation_team")
+    @allure.label("owner", "ZhannaOvcharenko")
     def test_login_invalid_password(self):
         with allure.step("Открыть экран входа"):
             browser.element((AppiumBy.ACCESSIBILITY_ID, "Sign in")).click()
