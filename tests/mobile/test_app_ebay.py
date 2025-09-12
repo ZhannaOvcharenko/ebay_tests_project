@@ -3,6 +3,11 @@ from allure_commons.types import Severity
 from appium.webdriver.common.appiumby import AppiumBy
 from selene.support.conditions import have
 from selene.support.shared import browser
+import os
+
+USERNAME = os.getenv("TEST_EBAY_USERNAME")
+PASSWORD = os.getenv("TEST_EBAY_PASSWORD")
+WRONG_PASSWORD = os.getenv("TEST_EBAY_WRONG_PASSWORD")
 
 
 @allure.epic("Mobile Tests")
@@ -31,8 +36,8 @@ class TestEbayMobile:
             browser.element((AppiumBy.ACCESSIBILITY_ID, "Sign in")).click()
 
         with allure.step("Ввести корректные данные"):
-            browser.element((AppiumBy.ID, "com.ebay.mobile:id/edit_text_username")).send_keys("test_user")
-            browser.element((AppiumBy.ID, "com.ebay.mobile:id/edit_text_password")).send_keys("correct_password")
+            browser.element((AppiumBy.ID, "com.ebay.mobile:id/edit_text_username")).send_keys(USERNAME)
+            browser.element((AppiumBy.ID, "com.ebay.mobile:id/edit_text_password")).send_keys(PASSWORD)
             browser.element((AppiumBy.ID, "com.ebay.mobile:id/button_sign_in")).click()
 
         with allure.step("Проверить успешный вход"):
@@ -46,8 +51,8 @@ class TestEbayMobile:
             browser.element((AppiumBy.ACCESSIBILITY_ID, "Sign in")).click()
 
         with allure.step("Ввести неверный пароль"):
-            browser.element((AppiumBy.ID, "com.ebay.mobile:id/edit_text_username")).send_keys("test_user")
-            browser.element((AppiumBy.ID, "com.ebay.mobile:id/edit_text_password")).send_keys("wrong_password")
+            browser.element((AppiumBy.ID, "com.ebay.mobile:id/edit_text_username")).send_keys(USERNAME)
+            browser.element((AppiumBy.ID, "com.ebay.mobile:id/edit_text_password")).send_keys(WRONG_PASSWORD)
             browser.element((AppiumBy.ID, "com.ebay.mobile:id/button_sign_in")).click()
 
         with allure.step("Проверить сообщение об ошибке"):
