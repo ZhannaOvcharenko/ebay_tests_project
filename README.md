@@ -70,7 +70,7 @@ COMMENT = 'some comment' # Комментарий, в котором можно 
 ----
 
 ### Отчет в Allure TestOps
-#### <a target="_blank" href="https://allure.autotests.cloud/launch/47738/?treeId=0">Результаты прогона</a>
+#### <a target="_blank" href="https://allure.autotests.cloud/launch/48174">Результаты прогона</a>
 ![allure_report_overview](/files/Allure%20TestOPS.png)
 
 ----
