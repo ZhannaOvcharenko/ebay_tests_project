@@ -73,7 +73,6 @@ COMMENT = 'some comment' # Комментарий, в котором можно 
 #### <a target="_blank" href="https://allure.autotests.cloud/launch/48174">Результаты прогона</a>
 ![allure_report_overview](/files/Allure%20TestOPS.png)
 
-
 ----
 
 ### Оповещения в Telegram
