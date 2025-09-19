@@ -5,12 +5,14 @@ from selenium.webdriver.chrome.options import Options
 from selene.support.shared import browser
 from utils import attach
 from dotenv import load_dotenv
+from pages.main_page import MainPage
 
 load_dotenv()
 
 
 @pytest.fixture(scope='function', autouse=True)
 def setup_browser():
+    """Фикстура для настройки браузера и подключения к Selenoid"""
     selenoid_login = os.getenv("SELENOID_LOGIN")
     selenoid_pass = os.getenv("SELENOID_PASS")
     selenoid_url = os.getenv("SELENOID_URL")
@@ -44,9 +46,18 @@ def setup_browser():
 
     yield
 
+    # Добавляем вложения в Allure
     attach.add_screenshot(browser)
     attach.add_logs(browser)
     attach.add_html(browser)
     attach.add_video(browser)
 
     browser.quit()
+
+
+@pytest.fixture()
+def open_main_page():
+    """Фикстура для открытия главной страницы и принятия cookies"""
+    page = MainPage()
+    page.open_ebay_main_page().accept_cookies_if_present()
+    return page

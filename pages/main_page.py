@@ -2,6 +2,7 @@ import allure
 from selene import browser, have, be
 from selenium.common import TimeoutException
 
+
 browser.config.timeout = 20
 
 
@@ -50,6 +51,8 @@ class MainPage:
             "Help & Contact": browser.all('//a[normalize-space()="Help & Contact"]')
         }
 
+    # ---------------------- Действия ----------------------
+
     @allure.step("Открыть главную страницу eBay")
     def open_ebay_main_page(self):
         browser.open('/')
@@ -66,20 +69,12 @@ class MainPage:
         condition_button = browser.element("//span[contains(text(),'Condition')]")
         condition_button.should(be.visible).click()
 
-        if condition == "New":
-            browser.element("//span[normalize-space()='New']").should(be.visible).click()
-        elif condition == "Used":
-            browser.element("//span[normalize-space()='Used']").should(be.visible).click()
-
+        browser.element(f"//span[normalize-space()='{condition}']").should(be.visible).click()
         return self
 
     @allure.step("Применить фильтр бренда: {brand}")
     def apply_brand_filter(self, brand):
-        brand_section = browser.element(
-            "//h3[.//text()='Brand']//div[contains(@class,'x-refine__item__title-container')]")
-        brand_section.should(be.visible).click()
-
-        limited_brand = browser.all(f"//div[@aria-controls]/..//span[normalize-space()='{brand}']")
+        limited_brand = browser.all(f"//span[normalize-space()='{brand}']")
         if limited_brand:
             limited_brand.first.should(be.visible).click()
             return self
@@ -110,14 +105,24 @@ class MainPage:
         self.add_to_cart_button.should(be.visible).click()
         return self
 
-    @allure.step("Проверить, что корзина не пуста")
-    def cart_should_not_be_empty(self):
-        self.cart_icon.should(be.visible).should(have.no.text('0'))
-        return self
-
     @allure.step("Перейти в корзину")
     def go_to_cart(self):
         self.cart_link.should(be.visible).click()
+        return self
+
+    @allure.step("Принять cookies, если баннер виден")
+    def accept_cookies_if_present(self):
+        try:
+            browser.all("//button[normalize-space()='Accept All']").with_(timeout=5).first.should(be.visible).click()
+        except TimeoutException:
+            pass
+        return self
+
+    # ---------------------- Проверки ----------------------
+
+    @allure.step("Проверить, что корзина не пуста")
+    def cart_should_not_be_empty(self):
+        self.cart_icon.should(be.visible).should(have.no.text('0'))
         return self
 
     @allure.step("Проверить элементы хэдера")
@@ -154,10 +159,22 @@ class MainPage:
         elements.first.should(be.visible)
         return self
 
-    @allure.step("Принять cookies, если баннер виден")
-    def accept_cookies_if_present(self):
-        try:
-            browser.all("//button[normalize-space()='Accept All']").with_(timeout=5).first.should(be.visible).click()
-        except TimeoutException:
-            pass
+    @allure.step("Проверить, что есть результаты поиска")
+    def should_have_results(self):
+        self.search_results.should(have.size_greater_than(0))
+        return self
+
+    @allure.step("Проверить, что результаты поиска содержат текст: {text}")
+    def results_should_contain(self, text):
+        self.search_results.first.should(have.text(text))
+        return self
+
+    @allure.step("Проверить, что фильтр состояния применился: {condition}")
+    def should_have_condition(self, condition):
+        browser.element("//span[contains(@class,'x-refine__selected')]").should(have.text(condition))
+        return self
+
+    @allure.step("Проверить, что фильтр бренда применился: {brand}")
+    def should_have_brand(self, brand):
+        browser.element("//span[contains(@class,'x-refine__selected')]").should(have.text(brand))
         return self
